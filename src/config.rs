@@ -3,6 +3,8 @@ use std::env;
 pub struct AppConfig {
     pub port: u16,
     pub host: String,
+    pub mongodb_url: String,
+    pub mongodb_db_name: String,
 }
 
 pub fn get_app_config() -> AppConfig {
@@ -11,5 +13,13 @@ pub fn get_app_config() -> AppConfig {
         .unwrap_or(8080);
     let host = env::var("HOST").unwrap_or("127.0.0.1".to_owned());
 
-    AppConfig { port, host }
+    let mongodb_url = env::var("MONGODB_URL").expect("MONGODB_URL not presented");
+    let mongodb_db_name = env::var("MONGODB_DB_NAME").expect("MONGODB_DB_NAME not presented");
+
+    AppConfig {
+        port,
+        host,
+        mongodb_url,
+        mongodb_db_name,
+    }
 }

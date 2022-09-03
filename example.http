@@ -1,0 +1,11 @@
+### Get all todos
+GET http://localhost:3001/todos/
+
+### Create todo
+PUT http://localhost:3001/todos/
+
+{
+    "id": 0,
+    "text": "test",
+    "is_completed": false
+}
