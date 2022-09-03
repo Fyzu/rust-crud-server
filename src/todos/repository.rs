@@ -1,4 +1,4 @@
-use mongodb::{error, Collection, Database};
+use mongodb::{error::Result as MongoResult, Collection, Database};
 use tokio_stream::StreamExt;
 
 use super::model::TodoModel;
@@ -15,13 +15,13 @@ impl TodosRepository {
         TodosRepository { collection }
     }
 
-    pub async fn add_todo(self: &Self, todo: &TodoModel) -> error::Result<()> {
+    pub async fn save_todo(self: &Self, todo: &TodoModel) -> MongoResult<()> {
         self.collection.insert_one(todo, None).await?;
 
         Ok(())
     }
 
-    pub async fn get_all(self: &Self) -> error::Result<Vec<TodoModel>> {
+    pub async fn get_all(self: &Self) -> MongoResult<Vec<TodoModel>> {
         let mut cursor = self.collection.find(None, None).await?;
 
         let mut values: Vec<TodoModel> = Vec::new();

@@ -2,9 +2,10 @@
 GET http://localhost:3001/todos/
 
 ### Create todo
-PUT http://localhost:3001/todos/
+POST http://localhost:3001/todos/ HTTP/1.1
+content-type: application/json
 
 {
     "text": "test",
-    "is_completed": false
+    "isCompleted": false
 }
