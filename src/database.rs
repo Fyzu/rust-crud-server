@@ -1,4 +1,4 @@
-use mongodb::{Database, options::ClientOptions, Client};
+use mongodb::{options::ClientOptions, Client, Database};
 
 pub async fn setup_database(url: String, db_name: String) -> mongodb::error::Result<Database> {
     let mut options = ClientOptions::parse(url)

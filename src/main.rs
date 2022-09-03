@@ -8,7 +8,10 @@ use actix_web::{error, middleware, web::JsonConfig, App, HttpResponse, HttpServe
 use config::get_app_config;
 use database::setup_database;
 use dotenvy::dotenv;
-use todos::service::todos_config;
+use mongodb::bson::oid::ObjectId;
+use todos::{repository::TodosRepository, service::todos_config};
+
+use crate::todos::model::{TodoModel, TodoResponse};
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
@@ -16,9 +19,26 @@ async fn main() -> io::Result<()> {
 
     let app_config = get_app_config();
 
-    let _database = setup_database(app_config.mongodb_url, app_config.mongodb_db_name)
+    let db = setup_database(app_config.mongodb_url, app_config.mongodb_db_name)
         .await
         .map_err(|err| io::Error::new(io::ErrorKind::Other, err))?;
+
+    let _todos_collection = TodosRepository::new(db);
+
+    // let res = todos_collection.add_todo(&TodoModel {
+    //     id: ObjectId::new(),
+    //     text: "todo 1".to_owned(),
+    //     is_completed: false,
+    // }).await;
+
+    // println!("{:?}", res);
+    // let todos = todos_collection.get_all().await;
+    // println!("{:?}", todos);
+
+    // let todos = todos_collection.get_all().await.unwrap();
+
+    // let responses: Vec<TodoResponse> = todos.iter().map(TodoResponse::from).collect();
+    // println!("{:?}", responses);
 
     let setup_server = || {
         let json_config = JsonConfig::default()
