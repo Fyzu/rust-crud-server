@@ -17,6 +17,8 @@ use crate::todos::model::{TodoModel, TodoResponse};
 async fn main() -> io::Result<()> {
     dotenv().ok();
 
+    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+
     let app_config = get_app_config();
 
     let db = setup_database(app_config.mongodb_url, app_config.mongodb_db_name)
@@ -51,6 +53,7 @@ async fn main() -> io::Result<()> {
         App::new()
             .app_data(json_config)
             .wrap(middleware::Compress::default())
+            .wrap(Logger::default())
             .configure(todos_config)
     };
 

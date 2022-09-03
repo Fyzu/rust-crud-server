@@ -30,7 +30,7 @@ impl TodosRepository {
         while let Some(result) = cursor.next().await {
             match result {
                 Ok(todo) => values.push(todo),
-                Err(error) => println!("Error: {:?}", error),
+                Err(e) => log::error!("{:?}", e),
             }
         }
 
