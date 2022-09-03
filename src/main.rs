@@ -1,21 +1,18 @@
+pub mod config;
 mod todos;
 
-use std::env;
-
 use actix_web::{error, middleware, web::JsonConfig, App, HttpResponse, HttpServer};
+use config::get_app_config;
 use dotenvy::dotenv;
-use todos::controller::todos_config;
+use todos::service::todos_config;
 
-#[actix_web::main]
+#[tokio::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
-    let port: u16 = env::var("PORT")
-        .and_then(|p| Ok(p.parse::<u16>().expect("cannot parse PORT")))
-        .unwrap_or(8080);
-    let host = env::var("HOST").unwrap_or("127.0.0.1".to_owned());
+    let app_config = get_app_config();
 
-    let factory = || {
+    let setup_server = || {
         let json_config = JsonConfig::default()
             .limit(4096)
             .error_handler(|err, _req| {
@@ -29,7 +26,8 @@ async fn main() -> std::io::Result<()> {
             .configure(todos_config)
     };
 
-    let server = HttpServer::new(factory).bind((host, port));
-
-    server?.run().await
+    HttpServer::new(setup_server)
+        .bind((app_config.host, app_config.port))?
+        .run()
+        .await
 }
