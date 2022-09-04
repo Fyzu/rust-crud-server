@@ -1,11 +1,24 @@
 ### Get all todos
-GET http://localhost:3001/todos/
+GET http://localhost:3001/todos/ HTTP/1.1
+
+### Get by id
+GET http://localhost:3001/todos/63146172fcbf2e8011829c55 HTTP/1.1
 
 ### Create todo
 POST http://localhost:3001/todos/ HTTP/1.1
 content-type: application/json
 
 {
-    "text": "test",
+    "text": "1",
+    "isCompleted": false
+}
+
+### Update todo
+PATCH http://localhost:3001/todos/ HTTP/1.1
+content-type: application/json
+
+{
+    "id": "63146172fcbf2e8011829c55",
+    "text": "test 2",
     "isCompleted": false
 }

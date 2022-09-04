@@ -1,4 +1,8 @@
-use mongodb::{error::Result as MongoResult, Collection, Database};
+use mongodb::{
+    bson::{doc, oid::ObjectId},
+    error::Result as MongoResult,
+    Collection, Database,
+};
 use tokio_stream::StreamExt;
 
 use super::model::TodoModel;
@@ -15,9 +19,34 @@ impl TodosRepository {
         TodosRepository { collection }
     }
 
-    pub async fn save_todo(self: &Self, todo: &TodoModel) -> MongoResult<()> {
+    pub async fn get_by_id(self: &Self, id: ObjectId) -> MongoResult<Option<TodoModel>> {
+        let result = self
+            .collection
+            .find_one(Some(doc! { "_id": id }), None)
+            .await?;
+
+        Ok(result)
+    }
+
+    pub async fn add_todo(self: &Self, todo: &TodoModel) -> MongoResult<()> {
         self.collection.insert_one(todo, None).await?;
 
+        Ok(())
+    }
+
+    pub async fn save_todo(self: &Self, todo: &TodoModel) -> MongoResult<()> {
+        self.collection
+            .update_one(
+                doc! { "_id": todo.id },
+                doc! { "$set":
+                    {
+                        "text": todo.text.clone(),
+                        "is_completed": todo.is_completed,
+                    }
+                },
+                None,
+            )
+            .await?;
         Ok(())
     }
 
